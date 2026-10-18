@@ -447,13 +447,17 @@
       if (c.keepTriggerVisible && trigger.closest('.hero') && spaceBelowTrigger >= 160) {
         panel.style.maxHeight = `min(${c.maxHeight}, ${Math.floor(spaceBelowTrigger)}px)`;
       }
-      const close = button(c.close, panel, () => closePopup());
+      // Scroll the contents independently so the surface background never scrolls away.
+      const scroller = el('div', 'popup-scroll', panel);
+      scroller.style.padding = getComputedStyle(panel).padding;
+      panel.style.padding = '0';
+      const close = button(c.close, scroller, () => closePopup());
       close?.classList.add('popup-close');
-      text('p', c.eyebrow, panel, 'eyebrow');
-      const title = text('h2', c.title, panel, 'popup-title');
+      text('p', c.eyebrow, scroller, 'eyebrow');
+      const title = text('h2', c.title, scroller, 'popup-title');
       if (title) { title.id = 'popup-title'; panel.setAttribute('aria-labelledby', title.id); }
-      text('p', c.content, panel, 'popup-content');
-      buttons(c.buttonGroup, c.buttons, panel);
+      text('p', c.content, scroller, 'popup-content');
+      buttons(c.buttonGroup, c.buttons, scroller);
       popup = panel; popupTrigger = trigger;
       trigger.setAttribute('aria-expanded', 'true');
       requestAnimationFrame(() => { if (popup === panel) { panel.classList.add('is-open'); panel.focus({ preventScroll: true }); } });
